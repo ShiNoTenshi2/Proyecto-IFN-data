@@ -1,19 +1,33 @@
-// brigadas-service/config/database.js
+// PROYECTO-IFN-DATA/brigadas-service/config/database.js
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseKey) {
-  console.error('❌ ERROR: Faltan credenciales de Supabase');
-  process.exit(1);
+// Validar variables de entorno
+if (!process.env.SUPABASE_URL) {
+  throw new Error('❌ SUPABASE_URL no está definida en .env');
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+if (!process.env.SUPABASE_KEY) {
+  throw new Error('❌ SUPABASE_KEY no está definida en .env');
+}
 
-console.log('✅ Supabase conectado correctamente');
+// Crear cliente de Supabase (INSTANCIA ÚNICA)
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY,
+  {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    }
+  }
+);
 
+console.log('✅ Conexión con Supabase configurada correctamente');
+console.log('📍 URL:', process.env.SUPABASE_URL);
+console.log('📍 KEY:', process.env.SUPABASE_KEY ? "✓" : "✗ FALTANTE");
+
+// Exportar como default
 export default supabase;
